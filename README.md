@@ -6,15 +6,15 @@ To install them, just do :
 
     for i in hrpp*; do skbs install --symlink $i; done
 
-# USAGE
+# Usage
 
-to use one of these template, do the following :
+To use one of these template, do the following :
 
     skbs gen @hrpp_C <dest> -- -p protocol.hrp
 
 where `@hrpp_C` can be replaced by any hrpp template, and `<dest>` is the destination directory.
 
-to get help, simply do :
+To get help, simply do :
 
     skbs gen @hrpp_C <dest> -- --help
   
