@@ -85,9 +85,15 @@ class Type(object):
 
   def get_flat(self):
     return self.val,
-  
+
   def __valrepr__(self, *args, **kwargs):
     return self.__repr__(*args, **kwargs)
+
+  @classmethod
+  def from_flat(cls, *args):
+    r = cls()
+    r.set_flat(args)
+    return r
 
 ## for name, size, fmt, init in chain(_p.int_types, _p.uint_types, _p.float_types) :
 class {{name}}(Type):
@@ -146,7 +152,7 @@ class Array(Type):
         v.set(nv)
     elif len(val) != self.n :
       raise ValueError(f'Inconsistent array size : {len(self.val)=} != {len(val)=}')
-    elif any( not isinstance(v) for v in val ) :
+    elif any( not isinstance(v, self.type) for v in val ) :
       raise TypeError(f'At least one value in the iterable is not of type {self.type.__class__.__name___}')
     else:
       self.internal_val = val
@@ -245,7 +251,7 @@ class Struct(Type):
     if isinstance(val, dict) :
       return self.setFromDict(val)
     if deep :
-      return self.copyFrom(val)
+      return self.setFrom(val)
     if isinstance(val, self.__class__) :
       self.val = val
   
@@ -253,10 +259,10 @@ class Struct(Type):
     for f, v in zip(self._field_list, val) :
       f.set(v)
 
-  def copyFrom(self, val):
+  def setFrom(self, val):
     raise NotImplementedError()
   
-  def copyFromDict(self, val):
+  def setFromDict(self, val):
     raise NotImplementedError()
 
   def get_flat(self):
@@ -387,7 +393,7 @@ class {{sname}}(Struct):
       + '\n' + '  ' * indent + '}'
     )
 
-  def copyFrom(self, val):
+  def setFrom(self, val):
 ##     for f in s.fields:
     self._fields.{{f.name}} = val.{{f.name}}
 ##     -
@@ -395,7 +401,7 @@ class {{sname}}(Struct):
     pass
 ##     -
 
-  def copyFromDict(self, val):
+  def setFromDict(self, val):
 ##     for f in s.fields:
     self._fields.{{f.name}}.set(val['{{f.name}}'])
 ##     -
